@@ -12,7 +12,7 @@ class UserProductpage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productData = Provider.of<Products>(context);
+    final productData = Provider.of<Products>(context, listen: false);
     final products = productData.items;
     return SafeArea(
       child: Scaffold(
@@ -37,34 +37,49 @@ class UserProductpage extends StatelessWidget {
         drawer: AppDrawer(
           key: UniqueKey(),
         ),
-        body: products.isEmpty
-            ? const Center(
-                child: Text('No products to show'),
-              )
-            : RefreshIndicator(
-                onRefresh: () async {
-                  await Provider.of<Products>(context, listen: false)
-                      .getProducts()
-                      .catchError((e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'No internet connection',
+        body: products.isNotEmpty
+            ? FutureBuilder(
+                future: Provider.of<Products>(context, listen: false)
+                    .getProducts(true),
+                builder: (ctx, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
                         ),
                       ),
                     );
-                  });
-                },
-                child: ListView.builder(
-                  itemCount: productData.items.length,
-                  itemBuilder: (ctx, i) {
-                    return UserProductItem(
-                      productData.items[i].title,
-                      productData.items[i].imageUrl,
-                      productData.items[i].id,
+                  } else if (snapshot.hasError) {
+                    return const Center(
+                      child: Text('No Internet Connection.'),
                     );
-                  },
-                ),
+                  } else {
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        await productData.getProducts(true);
+                      },
+                      child: Consumer<Products>(
+                        builder: (ctx, productData, _) {
+                          return ListView.builder(
+                            itemCount: productData.items.length,
+                            itemBuilder: (ctx, i) {
+                              return UserProductItem(
+                                productData.items[i].title,
+                                productData.items[i].imageUrl,
+                                productData.items[i].id,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  }
+                })
+            : const Center(
+                child: Text('No products to show'),
               ),
       ),
     );

@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
   final String authToken;
-  Products(this.authToken, this._items);
+  final String userId;
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> _items = [];
 
@@ -36,7 +37,7 @@ class Products with ChangeNotifier {
             'description': newProduct.description,
             'imageUrl': newProduct.imageUrl,
             'price': newProduct.price,
-            'isFavourite': newProduct.isFavourite,
+            'userId': userId,
           },
         ),
       );
@@ -56,9 +57,12 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> getProducts() async {
+  Future<void> getProducts([bool filterByUser = false]) async {
+    String filterString =
+        filterByUser ? 'orderBy="userId"&equalTo="$userId"' : '';
+
     final url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken';
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken&$filterString';
 
     http.Response response;
     try {
@@ -73,6 +77,13 @@ class Products with ChangeNotifier {
     } else if (response.body.isNotEmpty && response.statusCode == 200) {
       var jsonData = json.decode(response.body) as Map<String, dynamic>;
       List<Product> _loadedProducts = [];
+      final theUrl =
+          'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/userFavourites/$userId.json?auth=$authToken';
+      final theResponse = await http.get(
+        Uri.parse(theUrl),
+      );
+
+      final jsonFavouritesData = json.decode(theResponse.body);
 
       jsonData.forEach(
         (key, value) {
@@ -85,7 +96,9 @@ class Products with ChangeNotifier {
                 value['price'].toString(),
               ),
               imageUrl: value['imageUrl'] as String,
-              isFavourite: value['isFavourite'] as bool,
+              isFavourite: jsonFavouritesData == null
+                  ? false
+                  : jsonFavouritesData[key] ?? false,
             ),
           );
         },

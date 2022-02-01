@@ -17,7 +17,10 @@ class FavouriteIconWidget extends StatelessWidget {
       right: 10,
       child: IconButton(
         onPressed: () {
-          product.toggleToIsFavourite(authData.token.toString());
+          product.toggleToIsFavourite(
+            authData.token.toString(),
+            authData.userId.toString(),
+          );
         },
         icon: Consumer<Product>(
           builder: (ctx, product, child) => Icon(

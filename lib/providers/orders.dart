@@ -20,7 +20,8 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   final String authToken;
-  Orders(this.authToken, this._orderItems);
+  final String userId;
+  Orders(this.authToken, this.userId, this._orderItems);
 
   List<OrderItem> _orderItems = [];
 
@@ -30,7 +31,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrderItem(double amount, List<CartItem> products) async {
     final url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json?auth=$authToken';
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders/$userId.json?auth=$authToken';
     final timeStamp = DateTime.now();
     try {
       final response = await http.post(
@@ -70,7 +71,7 @@ class Orders with ChangeNotifier {
 
   Future<void> getOrders() async {
     final url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json?auth=$authToken';
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders/$userId.json?auth=$authToken';
 
     http.Response response;
 
@@ -124,7 +125,7 @@ class Orders with ChangeNotifier {
 
   Future<void> deleteOrder(String id) async {
     final url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders/$id.json?auth=$authToken';
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders/$userId/$id.json?auth=$authToken';
 
     try {
       await http.delete(

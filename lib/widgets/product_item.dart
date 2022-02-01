@@ -53,7 +53,10 @@ class _ProductItemState extends State<ProductItem> {
                 ),
                 color: Colors.amber,
                 onPressed: () {
-                  product.toggleToIsFavourite(authData.token.toString());
+                  product.toggleToIsFavourite(
+                    authData.token.toString(),
+                    authData.userId.toString(),
+                  );
                 },
               );
             },
