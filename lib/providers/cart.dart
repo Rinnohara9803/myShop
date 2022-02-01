@@ -81,21 +81,12 @@ class CartItems with ChangeNotifier {
   }
 
   void removeCartItem(String productId) {
-    // try {
-    //   await http.delete()
-    // } catch (e) {}
     _items.remove(productId);
     notifyListeners();
   }
 
   Future<void> editSingleCartItem(
       String productId, double price, int quantity) async {
-    // try {
-
-    // } catch (e) {
-    //   rethrow;
-    // }
-
     if (!_items.containsKey(productId)) {
       return;
     }

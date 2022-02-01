@@ -19,6 +19,9 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
+  final String authToken;
+  Orders(this.authToken, this._orderItems);
+
   List<OrderItem> _orderItems = [];
 
   List<OrderItem> get orderItems {
@@ -26,8 +29,8 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> addOrderItem(double amount, List<CartItem> products) async {
-    const url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json';
+    final url =
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json?auth=$authToken';
     final timeStamp = DateTime.now();
     try {
       final response = await http.post(
@@ -66,8 +69,8 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> getOrders() async {
-    const url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json';
+    final url =
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json?auth=$authToken';
 
     http.Response response;
 
@@ -121,7 +124,7 @@ class Orders with ChangeNotifier {
 
   Future<void> deleteOrder(String id) async {
     final url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders/$id.json';
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/orders/$id.json?auth=$authToken';
 
     try {
       await http.delete(

@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
-  // final String authToken;
-  // Products(this.authToken, this._items);
+  final String authToken;
+  Products(this.authToken, this._items);
 
   List<Product> _items = [];
 
@@ -25,8 +25,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product newProduct) async {
-    const url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products.json';
+    final url =
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken';
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -57,8 +57,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> getProducts() async {
-    const url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products.json';
+    final url =
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken';
 
     http.Response response;
     try {
@@ -98,7 +98,7 @@ class Products with ChangeNotifier {
   Future<void> editProduct(String id, Product theProduct) async {
     // int index = _items.indexWhere((product) => product.id == id);
     final url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json';
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken';
 
     Product tbrProduct = _items.firstWhere((product) => product.id == id);
     int index = _items.indexOf(tbrProduct);
@@ -127,7 +127,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json';
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json?auth=$authToken';
     try {
       await http.delete(
         Uri.parse(url),

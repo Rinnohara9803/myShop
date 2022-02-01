@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myshop/providers/auth.dart';
 import 'package:myshop/providers/cart.dart';
 import 'package:myshop/providers/product.dart';
 import 'package:myshop/screens/product_details_page.dart';
@@ -14,6 +15,7 @@ class _ProductItemState extends State<ProductItem> {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cartData = Provider.of<CartItems>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(
         10,
@@ -51,7 +53,7 @@ class _ProductItemState extends State<ProductItem> {
                 ),
                 color: Colors.amber,
                 onPressed: () {
-                  product.toggleToIsFavourite();
+                  product.toggleToIsFavourite(authData.token.toString());
                 },
               );
             },

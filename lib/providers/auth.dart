@@ -22,6 +22,7 @@ class Auth with ChangeNotifier {
     return _token != null;
   }
 
+  //authenticates the users based two conditions namely: login and signup
   Future<void> authenticate(
       String email, String password, String webPath) async {
     final url =

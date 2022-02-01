@@ -11,7 +11,7 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cartData = Provider.of<CartItems>(context, listen: false);
+    final cartData = Provider.of<CartItems>(context, listen: true);
     final orderData = Provider.of<Orders>(context, listen: false);
 
     return SafeArea(
