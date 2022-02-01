@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
-  final String authToken;
-  Products(this.authToken, this._items);
+  // final String authToken;
+  // Products(this.authToken, this._items);
 
   List<Product> _items = [];
 
@@ -57,8 +57,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> getProducts() async {
-    final url =
-        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products.json?auth=$authToken';
+    const url =
+        'https://flutterupdate-63805-default-rtdb.asia-southeast1.firebasedatabase.app/products.json';
 
     http.Response response;
     try {

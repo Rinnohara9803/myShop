@@ -5,19 +5,21 @@ import 'dart:convert';
 import 'package:myshop/models/http_exception.dart';
 
 class Auth with ChangeNotifier {
-  String _token = '';
-  late DateTime _expiryDate;
-  late String _userId;
+  String? _token;
+  DateTime? _expiryDate;
+  String? _userId;
 
   String? get token {
-    if (_token.isNotEmpty && _expiryDate.isAfter(DateTime.now())) {
+    if (_token != null &&
+        _expiryDate!.isAfter(DateTime.now()) &&
+        _expiryDate != null) {
       return _token;
     }
     return null;
   }
 
   bool get isAuth {
-    return _token.isNotEmpty;
+    return _token != null;
   }
 
   Future<void> authenticate(
