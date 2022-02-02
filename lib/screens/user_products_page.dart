@@ -13,7 +13,6 @@ class UserProductpage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productData = Provider.of<Products>(context, listen: false);
-    final products = productData.items;
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(

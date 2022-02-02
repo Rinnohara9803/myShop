@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:myshop/providers/auth.dart';
-import 'package:myshop/screens/auth_page.dart';
 import 'package:myshop/screens/orders_page.dart';
 import 'package:myshop/screens/user_products_page.dart';
 import 'package:provider/provider.dart';

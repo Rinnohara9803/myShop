@@ -10,6 +10,7 @@ import 'package:myshop/screens/edit_user_product_page.dart';
 import 'package:myshop/screens/orders_page.dart';
 import 'package:myshop/screens/product_details_page.dart';
 import 'package:myshop/screens/product_overview_page.dart';
+import 'package:myshop/screens/splash_page.dart';
 import 'package:myshop/screens/user_products_page.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +64,22 @@ class MyApp extends StatelessWidget {
               fontFamily: 'Lato',
             ),
             debugShowCheckedModeBanner: false,
-            home: auth.isAuth ? const ProductOverview() : AuthPage(),
+            home: auth.isAuth
+                ? const ProductOverview()
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (ctx, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SplashPage();
+                      } else {
+                        if (snapshot.data == true) {
+                          return const ProductOverview();
+                        } else {
+                          return AuthPage();
+                        }
+                      }
+                    },
+                  ),
             routes: {
               ProductOverview.routeName: (ctx) => const ProductOverview(),
               AuthPage.routeName: (ctx) => AuthPage(),
