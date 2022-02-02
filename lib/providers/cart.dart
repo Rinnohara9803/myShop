@@ -41,13 +41,13 @@ class CartItems with ChangeNotifier {
   }
 
   int get itemCount {
-    // return _items.length;
+    return _items.length;
 
-    int x = 0;
-    _items.forEach((key, value) {
-      x += value.quantity;
-    });
-    return x;
+    // int x = 0;
+    // _items.forEach((key, value) {
+    //   x += value.quantity;
+    // });
+    // return x;
   }
 
   void addCartItem(

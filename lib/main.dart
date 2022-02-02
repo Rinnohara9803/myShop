@@ -63,9 +63,9 @@ class MyApp extends StatelessWidget {
               fontFamily: 'Lato',
             ),
             debugShowCheckedModeBanner: false,
-            initialRoute: auth.isAuth ? '/' : AuthPage.routeName,
+            home: auth.isAuth ? const ProductOverview() : AuthPage(),
             routes: {
-              '/': (ctx) => const ProductOverview(),
+              ProductOverview.routeName: (ctx) => const ProductOverview(),
               AuthPage.routeName: (ctx) => AuthPage(),
               ProductDetailPage.routeName: (ctx) => const ProductDetailPage(),
               CartPage.routeName: (ctx) => const CartPage(),

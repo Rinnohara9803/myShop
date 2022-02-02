@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myshop/providers/auth.dart';
 import 'package:myshop/providers/cart.dart';
 import 'package:myshop/providers/products.dart';
 import 'package:myshop/screens/cart_page.dart';
@@ -15,6 +16,8 @@ enum Filters {
 
 class ProductOverview extends StatefulWidget {
   const ProductOverview({Key? key}) : super(key: key);
+
+  static const routeName = '/productOverview';
 
   @override
   State<ProductOverview> createState() => _ProductOverviewState();

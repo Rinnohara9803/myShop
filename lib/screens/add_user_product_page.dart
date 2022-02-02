@@ -298,7 +298,8 @@ class _AddUserProductPageState extends State<AddUserProductPage> {
                           }
                           if (!value.endsWith('.png') &&
                               !value.endsWith('.jpg') &&
-                              !value.endsWith('.jpeg')) {
+                              !value.endsWith('.jpeg') &&
+                              !value.endsWith('.gif')) {
                             return 'Please provide a valid Image URL';
                           }
                           return null;

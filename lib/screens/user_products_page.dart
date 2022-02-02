@@ -16,53 +16,53 @@ class UserProductpage extends StatelessWidget {
     final products = productData.items;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Your Products',
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  AddUserProductPage.routeName,
-                );
-              },
-              icon: const Icon(
-                Icons.add,
-              ),
+          appBar: AppBar(
+            title: const Text(
+              'Your Products',
             ),
-          ],
-        ),
-        drawer: AppDrawer(
-          key: UniqueKey(),
-        ),
-        body: products.isNotEmpty
-            ? FutureBuilder(
-                future: Provider.of<Products>(context, listen: false)
-                    .getProducts(true),
-                builder: (ctx, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: SizedBox(
-                        height: 15,
-                        width: 15,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
-                        ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    AddUserProductPage.routeName,
+                  );
+                },
+                icon: const Icon(
+                  Icons.add,
+                ),
+              ),
+            ],
+          ),
+          drawer: AppDrawer(
+            key: UniqueKey(),
+          ),
+          body: FutureBuilder(
+              future: Provider.of<Products>(context, listen: false)
+                  .getProducts(true),
+              builder: (ctx, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: SizedBox(
+                      height: 15,
+                      width: 15,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
                       ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return const Center(
-                      child: Text('No Internet Connection.'),
-                    );
-                  } else {
-                    return RefreshIndicator(
-                      onRefresh: () async {
-                        await productData.getProducts(true);
-                      },
-                      child: Consumer<Products>(
-                        builder: (ctx, productData, _) {
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text('No Internet Connection.'),
+                  );
+                } else {
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      await productData.getProducts(true);
+                    },
+                    child: Consumer<Products>(
+                      builder: (ctx, productData, _) {
+                        if (productData.items.isNotEmpty) {
                           return ListView.builder(
                             itemCount: productData.items.length,
                             itemBuilder: (ctx, i) {
@@ -73,15 +73,16 @@ class UserProductpage extends StatelessWidget {
                               );
                             },
                           );
-                        },
-                      ),
-                    );
-                  }
-                })
-            : const Center(
-                child: Text('No products to show'),
-              ),
-      ),
+                        } else {
+                          return const Center(
+                            child: Text('No products to show'),
+                          );
+                        }
+                      },
+                    ),
+                  );
+                }
+              })),
     );
   }
 }
