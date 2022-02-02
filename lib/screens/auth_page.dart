@@ -156,6 +156,9 @@ class _AuthCardState extends State<AuthCard> {
     });
   }
 
+  bool isTextObscure = true;
+  bool isTextObscure0 = true;
+
   void showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -223,8 +226,21 @@ class _AuthCardState extends State<AuthCard> {
                   },
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          isTextObscure = !isTextObscure;
+                        });
+                      },
+                      icon: Icon(
+                        isTextObscure ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.blueGrey,
+                      ),
+                    ),
+                  ),
+                  obscureText: isTextObscure,
                   controller: _passwordController,
                   validator: (value) {
                     if (value!.isEmpty || value.length < 5) {
@@ -238,9 +254,23 @@ class _AuthCardState extends State<AuthCard> {
                 if (_authMode == AuthMode.signup)
                   TextFormField(
                     enabled: _authMode == AuthMode.signup,
-                    decoration:
-                        const InputDecoration(labelText: 'Confirm Password'),
-                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isTextObscure0 = !isTextObscure0;
+                          });
+                        },
+                        icon: Icon(
+                          isTextObscure0
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.blueGrey,
+                        ),
+                      ),
+                    ),
+                    obscureText: isTextObscure0,
                     validator: _authMode == AuthMode.signup
                         ? (value) {
                             if (value != _passwordController.text) {
