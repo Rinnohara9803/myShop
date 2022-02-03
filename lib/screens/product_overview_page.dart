@@ -5,6 +5,7 @@ import 'package:myshop/screens/cart_page.dart';
 import 'package:myshop/widgets/badge.dart';
 import 'package:myshop/widgets/drawer.dart';
 import 'package:myshop/widgets/products_grid.dart';
+import 'package:myshop/widgets/search_tab.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -33,31 +34,169 @@ class _ProductOverviewState extends State<ProductOverview> {
     );
   }
 
+  final _searchTextController = TextEditingController();
+
+  FutureBuilder _futureBuilder(bool showFavourites) {
+    return FutureBuilder(
+      future: Provider.of<Products>(context, listen: false).getProducts(),
+      builder: (ctx, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return GridView.builder(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 10,
+            ),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              crossAxisCount: 2,
+              childAspectRatio: 4 / 4,
+            ),
+            itemCount: 10,
+            itemBuilder: (context, index) {
+              return Shimmer.fromColors(
+                period: const Duration(
+                  milliseconds: 1500,
+                ),
+                baseColor: Colors.blueGrey,
+                highlightColor: Colors.white,
+                direction: ShimmerDirection.ltr,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(
+                      10,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Flexible(
+                        flex: 3,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(
+                              10,
+                            ),
+                            topLeft: Radius.circular(
+                              10,
+                            ),
+                          ),
+                          child: Container(
+                            color: Colors.black12,
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 1,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            bottomRight: Radius.circular(
+                              10,
+                            ),
+                            bottomLeft: Radius.circular(
+                              10,
+                            ),
+                          ),
+                          child: Container(
+                            color: Colors.black26,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  snapshot.error.toString(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                const Text('Check your Connection.'),
+                const Text('And'),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/');
+                  },
+                  child: const Text('Try Again'),
+                ),
+              ],
+            ),
+          );
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          return Consumer<Products>(
+            builder: (ctx, productData, child) {
+              if (productData.items.isNotEmpty) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await productData.getProducts();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: ProductsGrid(showFavourites),
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: Text('No Items Found.'),
+                );
+              }
+            },
+          );
+        } else {
+          return const Center(
+            child: Text('Something went wrong.'),
+          );
+        }
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    _searchTextController.addListener(() {
+      setState(() {});
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final cartData = Provider.of<CartItems>(context, listen: false);
 
     return SafeArea(
       child: DefaultTabController(
-        length: 2,
+        length: 3,
         child: Scaffold(
           bottomNavigationBar: Container(
             height: 70,
-            color: Colors.blueGrey,
+            color: Colors.blueGrey.withOpacity(0.9),
             child: TabBar(
               labelStyle: const TextStyle(
                 fontSize: 11,
+                fontWeight: FontWeight.bold,
               ),
               labelColor: Colors.white,
               unselectedLabelColor: Colors.grey,
               tabs: [
                 tabBuilder(Icons.home, 'Home'),
                 tabBuilder(Icons.star, 'Favourites'),
+                tabBuilder(Icons.search, 'Search'),
               ],
             ),
           ),
           appBar: AppBar(
             title: const Text('My Shop'),
+            backgroundColor: Colors.blueGrey,
             actions: [
               Padding(
                 padding: const EdgeInsets.only(
@@ -84,254 +223,11 @@ class _ProductOverviewState extends State<ProductOverview> {
           ),
           body: TabBarView(
             children: [
-              FutureBuilder(
-                future:
-                    Provider.of<Products>(context, listen: false).getProducts(),
-                builder: (ctx, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return GridView.builder(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 10,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        crossAxisCount: 2,
-                        childAspectRatio: 4 / 4,
-                      ),
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        return Shimmer.fromColors(
-                          period: const Duration(
-                            milliseconds: 1500,
-                          ),
-                          baseColor: Colors.blueGrey,
-                          highlightColor: Colors.white,
-                          direction: ShimmerDirection.ltr,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                10,
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Flexible(
-                                  flex: 3,
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                      topRight: Radius.circular(
-                                        10,
-                                      ),
-                                      topLeft: Radius.circular(
-                                        10,
-                                      ),
-                                    ),
-                                    child: Container(
-                                      color: Colors.black12,
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                      bottomRight: Radius.circular(
-                                        10,
-                                      ),
-                                      bottomLeft: Radius.circular(
-                                        10,
-                                      ),
-                                    ),
-                                    child: Container(
-                                      color: Colors.black26,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            snapshot.error.toString(),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          const Text('Check your Connection.'),
-                          const Text('And'),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/');
-                            },
-                            child: const Text('Try Again'),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (snapshot.connectionState == ConnectionState.done) {
-                    return Consumer<Products>(
-                      builder: (ctx, productData, child) {
-                        if (productData.items.isNotEmpty) {
-                          return RefreshIndicator(
-                            onRefresh: () async {
-                              await productData.getProducts();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: ProductsGrid(false),
-                            ),
-                          );
-                        } else {
-                          return const Center(
-                            child: Text('No Items Found.'),
-                          );
-                        }
-                      },
-                    );
-                  } else {
-                    return const Center(
-                      child: Text('Something went wrong.'),
-                    );
-                  }
-                },
+              _futureBuilder(false),
+              _futureBuilder(true),
+              SearchTab(
+                searchTextController: _searchTextController,
               ),
-              FutureBuilder(
-                future:
-                    Provider.of<Products>(context, listen: false).getProducts(),
-                builder: (ctx, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return GridView.builder(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 10,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        crossAxisCount: 2,
-                        childAspectRatio: 4 / 4,
-                      ),
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        return Shimmer.fromColors(
-                          period: const Duration(
-                            milliseconds: 1500,
-                          ),
-                          baseColor: Colors.blueGrey,
-                          highlightColor: Colors.white,
-                          direction: ShimmerDirection.ltr,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                10,
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Flexible(
-                                  flex: 3,
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                      topRight: Radius.circular(
-                                        10,
-                                      ),
-                                      topLeft: Radius.circular(
-                                        10,
-                                      ),
-                                    ),
-                                    child: Container(
-                                      color: Colors.black12,
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                      bottomRight: Radius.circular(
-                                        10,
-                                      ),
-                                      bottomLeft: Radius.circular(
-                                        10,
-                                      ),
-                                    ),
-                                    child: Container(
-                                      color: Colors.black26,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            snapshot.error.toString(),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          const Text('Check your Connection.'),
-                          const Text('And'),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/');
-                            },
-                            child: const Text('Try Again'),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (snapshot.connectionState == ConnectionState.done) {
-                    return Consumer<Products>(
-                      builder: (ctx, productData, child) {
-                        if (productData.items.isNotEmpty) {
-                          return RefreshIndicator(
-                            onRefresh: () async {
-                              await productData.getProducts();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: ProductsGrid(true),
-                            ),
-                          );
-                        } else {
-                          return const Center(
-                            child: Text('No Items Found.'),
-                          );
-                        }
-                      },
-                    );
-                  } else {
-                    return const Center(
-                      child: Text('Something went wrong.'),
-                    );
-                  }
-                },
-              )
             ],
           ),
         ),

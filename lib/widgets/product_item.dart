@@ -31,7 +31,8 @@ class _ProductItemState extends State<ProductItem> {
           },
           child: Hero(
             tag: 'rino9803 ${product.id}',
-            child: Image(
+            child: FadeInImage(
+              placeholder: const AssetImage('assets/images/placeholder.png'),
               image: NetworkImage(
                 product.imageUrl,
               ),

@@ -94,7 +94,8 @@ class AuthCard extends StatefulWidget {
   _AuthCardState createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> {
+class _AuthCardState extends State<AuthCard>
+    with SingleTickerProviderStateMixin {
   Future<void> signUpUser() async {
     await Provider.of<Auth>(context, listen: false).signUpUser(
       _authData['email'] as String,
@@ -159,6 +160,46 @@ class _AuthCardState extends State<AuthCard> {
   bool isTextObscure = true;
   bool isTextObscure0 = true;
 
+  AnimationController? _controller;
+  Animation<double>? _opacityAnimation;
+  Animation<Offset>? _slideAnimation;
+
+  @override
+  void initState() {
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 300,
+      ),
+    );
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.easeIn,
+      ),
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, -0.5),
+      end: const Offset(0, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.easeIn,
+      ),
+    );
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller!.dispose();
+    super.dispose();
+  }
+
   void showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -184,10 +225,12 @@ class _AuthCardState extends State<AuthCard> {
       setState(() {
         _authMode = AuthMode.signup;
       });
+      _controller!.forward();
     } else {
       setState(() {
         _authMode = AuthMode.login;
       });
+      _controller!.reverse();
     }
   }
 
@@ -199,10 +242,15 @@ class _AuthCardState extends State<AuthCard> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 10.0,
-      child: Container(
-        height: _authMode == AuthMode.signup ? 360 : 300,
-        constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.signup ? 320 : 260),
+      child: AnimatedContainer(
+        duration: const Duration(
+          milliseconds: 300,
+        ),
+        curve: Curves.easeIn,
+        height: _authMode == AuthMode.login ? 300 : 360,
+        constraints: BoxConstraints(
+          minHeight: _authMode == AuthMode.login ? 300 : 360,
+        ),
         width: deviceSize.width * 0.75,
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -252,32 +300,44 @@ class _AuthCardState extends State<AuthCard> {
                   },
                 ),
                 if (_authMode == AuthMode.signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.signup,
-                    decoration: InputDecoration(
-                      labelText: 'Confirm Password',
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isTextObscure0 = !isTextObscure0;
-                          });
-                        },
-                        icon: Icon(
-                          isTextObscure0
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Colors.blueGrey,
+                  AnimatedContainer(
+                    duration: const Duration(
+                      milliseconds: 300,
+                    ),
+                    curve: Curves.easeIn,
+                    child: SlideTransition(
+                      position: _slideAnimation!,
+                      child: FadeTransition(
+                        opacity: _opacityAnimation!,
+                        child: TextFormField(
+                          enabled: _authMode == AuthMode.signup,
+                          decoration: InputDecoration(
+                            labelText: 'Confirm Password',
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isTextObscure0 = !isTextObscure0;
+                                });
+                              },
+                              icon: Icon(
+                                isTextObscure0
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.blueGrey,
+                              ),
+                            ),
+                          ),
+                          obscureText: isTextObscure0,
+                          validator: _authMode == AuthMode.signup
+                              ? (value) {
+                                  if (value != _passwordController.text) {
+                                    return 'Passwords do not match!';
+                                  }
+                                }
+                              : null,
                         ),
                       ),
                     ),
-                    obscureText: isTextObscure0,
-                    validator: _authMode == AuthMode.signup
-                        ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            }
-                          }
-                        : null,
                   ),
                 const SizedBox(
                   height: 20,

@@ -134,40 +134,45 @@ class _OrderItemmState extends State<OrderItemm> {
                       ),
               ),
             ),
-            if (isExpanded)
-              SizedBox(
-                height: min(
-                  widget.order.products.length * 20.0 + 50,
-                  180,
-                ),
-                child: ListView.builder(
-                  itemCount: widget.order.products.length,
-                  itemBuilder: (ctx, i) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 5,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            widget.order.products[i].title +
-                                '  ( ${widget.order.products[i].quantity}X )',
-                          ),
-                          Text(
-                            ' ${widget.order.products[i].price * widget.order.products[i].quantity.toDouble()}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+            AnimatedContainer(
+              duration: const Duration(
+                milliseconds: 300,
               ),
+              curve: Curves.easeIn,
+              height: isExpanded
+                  ? min(
+                      widget.order.products.length * 20.0 + 50,
+                      200,
+                    )
+                  : 0,
+              child: ListView.builder(
+                itemCount: widget.order.products.length,
+                itemBuilder: (ctx, i) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 5,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.order.products[i].title +
+                              '  ( ${widget.order.products[i].quantity}X )',
+                        ),
+                        Text(
+                          ' ${widget.order.products[i].price * widget.order.products[i].quantity.toDouble()}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
